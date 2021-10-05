@@ -15,11 +15,11 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
     models.materia
-      .create({ nombre: req.body.nombre })
+      .create({ nombre: req.body.nombre, id_carrera: req.body.id_carrera })
       .then(materia => res.status(201).send({ id: materia.id }))
       .catch(error => {
         if (error == "SequelizeUniqueConstraintError: Validation error") {
-          res.status(400).send('Bad request: existe otra carrera con el mismo nombre')
+          res.status(400).send('Bad request: existe otra materia con el mismo nombre')
         }
         else {
           console.log(`Error al intentar insertar en la base de datos: ${error}`)
@@ -31,7 +31,7 @@ router.post("/", (req, res) => {
 const findMateria = (id, { onSuccess, onNotFound, onError }) => {
     models.materia
       .findOne({
-        attributes: ["id", "nombre"],
+        attributes: ["id", "nombre","id_carrera"],
         where: { id }
       })
       .then(materia => (materia ? onSuccess(materia) : onNotFound()))
@@ -49,7 +49,7 @@ router.get("/:id", (req, res) => {
 router.put("/:id", (req, res) => {
     const onSuccess = materia =>
       materia
-        .update({ nombre: req.body.nombre }, { fields: ["nombre"] })
+        .update({ nombre: req.body.nombre, id_carrera: req.body.id_carrera }, { fields: ["nombre"] }, { fields: ["id_carrera"] } )
         .then(() => res.sendStatus(200))
         .catch(error => {
           if (error == "SequelizeUniqueConstraintError: Validation error") {
@@ -81,4 +81,3 @@ router.delete("/:id", (req, res) => {
 });
   
   module.exports = router;
-  
