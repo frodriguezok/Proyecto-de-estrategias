@@ -16,9 +16,9 @@ router.get("/", (req, res,next) => {
 
   models.materia.findAll({attributes: ["id","nombre","id_carrera"],
         
-        /////////se agrega la asociacion 
+       
         include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}]
-        ////////////////////////////////
+   
   
       }).then(materias => res.send(materias)).catch(error => { return next(error)});
   });
@@ -43,6 +43,7 @@ const findMateria = (id, { onSuccess, onNotFound, onError }) => {
     models.materia
       .findOne({
         attributes: ["id", "nombre", "id_carrera"],
+        include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}],
         where: { id }
       })
       .then(materia => (materia ? onSuccess(materia) : onNotFound()))

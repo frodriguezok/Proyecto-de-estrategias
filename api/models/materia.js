@@ -5,25 +5,18 @@ module.exports = (sequelize, DataTypes) => {
     id_carrera: DataTypes.INTEGER
   }, {});
   materia.associate = function(models) {
-    // associations can be defined here
-    materia.belongsTo(models.carrera// modelo al que pertenece
+  
+    materia.belongsTo(models.carrera
       ,{
-        as : 'Carrera-Relacionada',  // nombre de mi relacion
-        foreignKey: 'id_carrera'     // campo con el que voy a igualar
+        as : 'Carrera-Relacionada',  
+        foreignKey: 'id_carrera'   
       })
-    materia.hasMany(models.profesor,  // Modelo al que pertenece
+    materia.hasMany(models.profesor,  
       {
-          as: 'profesor',                 // nombre de mi relacion
-          foreignKey: 'id_materia'      // campo con el que voy a igualar 
+          as: 'profesor',             
+          foreignKey: 'id_materia'     
       })
   };
 
-  /*materia.associate = function(models) {
-  	materia.hasMany(models.profesor,  // Modelo al que pertenece
-    {
-      as: 'profesor',                 // nombre de mi relacion
-      foreignKey: 'id_materia'      // campo con el que voy a igualar 
-    })
-};*/
   return materia;
 };

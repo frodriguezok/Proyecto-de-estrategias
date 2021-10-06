@@ -4,13 +4,13 @@ module.exports = (sequelize, DataTypes) => {
     nombre: DataTypes.STRING
   }, {});
   
-/*carrera.associate = function(models) {
-  	carrera.hasMany(models.materia,  // Modelo al que pertenece
+carrera.associate = function(models) {
+  	carrera.hasMany(models.materia, 
     {
-      as: 'materia',                 // nombre de mi relacion
-      foreignKey: 'id_carrera'       // campo con el que voy a igualar 
+      as: 'materia',                 
+      foreignKey: 'id_carrera'       
     })
 };
-*/
+
   return carrera;
 };

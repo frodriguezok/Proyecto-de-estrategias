@@ -16,9 +16,9 @@ router.get("/", (req, res,next) => {
 
     models.profesor.findAll({attributes: ["id", "nombre","apellido","dni","id_materia"],
           
-          /////////se agrega la asociacion 
+           
           include:[{as:'materia-relacionada', model:models.materia, attributes: ["id","nombre","id_carrera"]}]
-          ////////////////////////////////
+          
     
         }).then(profesores => res.send(profesores)).catch(error => { return next(error)});
   });
@@ -42,6 +42,7 @@ const findProfesor = (id, { onSuccess, onNotFound, onError }) => {
     models.profesor
       .findOne({
         attributes: ["id", "nombre", "apellido", "dni","id_materia"],
+        include:[{as:'materia-relacionada', model:models.materia, attributes: ["id","nombre","id_carrera"]}],
         where: { id }
       })
       .then(profesor => (profesor ? onSuccess(profesor) : onNotFound()))
