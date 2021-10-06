@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 var models = require("../models");
 
-router.get("/", (req, res) => {
+/*router.get("/", (req, res) => {
     console.log("Esto es un mensaje para ver en consola");
     models.profesor
       .findAll({
@@ -10,8 +10,18 @@ router.get("/", (req, res) => {
       })
       .then(profesores => res.send(profesores))
       .catch(() => res.sendStatus(500));
-  });
+  });*/
 
+router.get("/", (req, res,next) => {
+
+    models.profesor.findAll({attributes: ["id", "nombre","apellido","dni","id_materia"],
+          
+          /////////se agrega la asociacion 
+          include:[{as:'materia-relacionada', model:models.materia, attributes: ["id","nombre","id_carrera"]}]
+          ////////////////////////////////
+    
+        }).then(profesores => res.send(profesores)).catch(error => { return next(error)});
+  });
 
 router.post("/", (req, res) => {
     models.profesor
@@ -31,7 +41,7 @@ router.post("/", (req, res) => {
 const findProfesor = (id, { onSuccess, onNotFound, onError }) => {
     models.profesor
       .findOne({
-        attributes: ["id", "nombre","id_materia"],
+        attributes: ["id", "nombre", "apellido", "dni","id_materia"],
         where: { id }
       })
       .then(profesor => (profesor ? onSuccess(profesor) : onNotFound()))
@@ -49,11 +59,11 @@ router.get("/:id", (req, res) => {
 router.put("/:id", (req, res) => {
     const onSuccess = profesor =>
       profesor
-        .update({ nombre: req.body.nombre }, { fields: ["nombre"] })
+        .update({ nombre: req.body.nombre,apellido: req.body.apellido,dni: req.body.dni ,id_materia: req.body.id_materia }, { fields: ["nombre","apellido","dni","id_materia"]})
         .then(() => res.sendStatus(200))
         .catch(error => {
           if (error == "SequelizeUniqueConstraintError: Validation error") {
-            res.status(400).send('Bad request: existe otra carrera con el mismo nombre')
+            res.status(400).send('Bad request: existe otro profesor con el mismo nombre')
           }
           else {
             console.log(`Error al intentar actualizar la base de datos: ${error}`)

@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 var models = require("../models");
 
-router.get("/", (req, res) => {
+/*router.get("/", (req, res) => {
     console.log("Esto es un mensaje para ver en consola");
     models.materia
       .findAll({
@@ -10,6 +10,17 @@ router.get("/", (req, res) => {
       })
       .then(materias => res.send(materias))
       .catch(() => res.sendStatus(500));
+  });*/
+
+router.get("/", (req, res,next) => {
+
+  models.materia.findAll({attributes: ["id","nombre","id_carrera"],
+        
+        /////////se agrega la asociacion 
+        include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}]
+        ////////////////////////////////
+  
+      }).then(materias => res.send(materias)).catch(error => { return next(error)});
   });
 
 
@@ -31,7 +42,7 @@ router.post("/", (req, res) => {
 const findMateria = (id, { onSuccess, onNotFound, onError }) => {
     models.materia
       .findOne({
-        attributes: ["id", "nombre","id_carrera"],
+        attributes: ["id", "nombre", "id_carrera"],
         where: { id }
       })
       .then(materia => (materia ? onSuccess(materia) : onNotFound()))
@@ -49,7 +60,7 @@ router.get("/:id", (req, res) => {
 router.put("/:id", (req, res) => {
     const onSuccess = materia =>
       materia
-        .update({ nombre: req.body.nombre, id_carrera: req.body.id_carrera }, { fields: ["nombre"] }, { fields: ["id_carrera"] } )
+        .update({ nombre: req.body.nombre, id_carrera: req.body.id_carrera }, { fields: ["nombre","id_carrera"] })
         .then(() => res.sendStatus(200))
         .catch(error => {
           if (error == "SequelizeUniqueConstraintError: Validation error") {
@@ -81,3 +92,4 @@ router.delete("/:id", (req, res) => {
 });
   
   module.exports = router;
+  
