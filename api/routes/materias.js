@@ -13,13 +13,12 @@ var models = require("../models");
   });*/
 
 router.get("/", (req, res,next) => {
-
+  const numPagina = Number.parseInt(req.query.pagina);
+  const numLimite = Number.parseInt(req.query.limite);
   models.materia.findAll({attributes: ["id","nombre","id_carrera"],
-        
-       
+        offset: numPagina * numLimite ,
+        limit: numLimite,
         include:[{as:'Carrera-Relacionada', model:models.carrera, attributes: ["id","nombre"]}]
-   
-  
       }).then(materias => res.send(materias)).catch(error => { return next(error)});
   });
 

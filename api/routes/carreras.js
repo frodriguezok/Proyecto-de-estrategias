@@ -2,15 +2,37 @@ var express = require("express");
 var router = express.Router();
 var models = require("../models");
 
+//El problema es que en el get hay que aclarar si o si una pagina y un limite, sino tira error.
+//Si la tabla esta vacia no hay problemas.
+
 router.get("/", (req, res) => {
   console.log("Esto es un mensaje para ver en consola");
+  const numPagina = Number.parseInt(req.query.pagina);
+  const numLimite = Number.parseInt(req.query.limite);
+
   models.carrera
     .findAll({
-      attributes: ["id", "nombre"]
-    })
+      attributes: ["id", "nombre"],
+      offset: numPagina * numLimite,
+      limit: numLimite
+    })    
     .then(carreras => res.send(carreras))
     .catch(() => res.sendStatus(500));
 });
+
+/*router.get("/", (req, res) => {
+  const page = Number.parseInt(req.query.page);
+  const size = Number.parseInt(req.query.size);
+  models.carrera
+  .findAndCountAll({
+    attributes: ["id","nombre"],
+    offset: page * size,
+    limit: size
+  })
+  .then(carreras => res.send(carreras))
+  .catch(() => res.sendStatus(500));
+});*/
+
 
 router.post("/", (req, res) => {
   models.carrera

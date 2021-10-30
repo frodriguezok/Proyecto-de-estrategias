@@ -12,15 +12,18 @@ var models = require("../models");
       .catch(() => res.sendStatus(500));
   });*/
 
-router.get("/", (req, res,next) => {
+//El problema es que en el get hay que aclarar si o si una pagina y un limite, sino tira error.
+//Si la tabla esta vacia no hay problemas.
 
-    models.profesor.findAll({attributes: ["id", "nombre","apellido","dni","id_materia"],
-          
-           
-          include:[{as:'materia-relacionada', model:models.materia, attributes: ["id","nombre","id_carrera"]}]
-          
+router.get("/", (req, res,next) => {
+  const numPagina = Number.parseInt(req.query.pagina);
+  const numLimite = Number.parseInt(req.query.limite);
+  models.profesor.findAll({attributes: ["id", "nombre","apellido","dni","id_materia"],
+    offset: numPagina * numLimite ,
+    limit: numLimite,
+    include:[{as:'materia-relacionada', model:models.materia, attributes: ["id","nombre","id_carrera"]}] 
     
-        }).then(profesores => res.send(profesores)).catch(error => { return next(error)});
+    }).then(profesores => res.send(profesores)).catch(error => { return next(error)});
   });
 
 router.post("/", (req, res) => {
