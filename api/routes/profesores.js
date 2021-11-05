@@ -1,21 +1,61 @@
 var express = require("express");
 var router = express.Router();
 var models = require("../models");
+const jwt = require('jsonwebtoken');
+const key = "clavesecreta2021";
 
-/*router.get("/", (req, res) => {
-    console.log("Esto es un mensaje para ver en consola");
-    models.profesor
-      .findAll({
-        attributes: ["id", "nombre","apellido","dni","id_materia"]
-      })
-      .then(profesores => res.send(profesores))
-      .catch(() => res.sendStatus(500));
-  });*/
+router.post("/login", (req, res) => {
+  if(req.body.usuario == "admin" && req.body.pass == "12345"){
+    const payload = {
+      check:true
+    };
+    const token = jwt.sign(payload, key,{
+      expiresIn: "7d"
+    });
+    res.json({
+      message: "¡Autenticacion exitosa",
+      token: token
+    });
+  }
+  else{
+    res.json({
+      message: "Usuario y/o contraseña incorrecta."
+    })
+  };
+});
 
-//El problema es que en el get hay que aclarar si o si una pagina y un limite, sino tira error.
-//Si la tabla esta vacia no hay problemas.
+const verificacion = express.Router();
 
-router.get("/", (req, res,next) => {
+verificacion.use((req, res, next)=>{
+  let token = req.headers['x-access-token'] || req.headers['authorization'];
+  //console.log(token);
+  if(!token){
+    res.status(401).send({
+      error: 'Es necesario el token'
+    })
+    return
+  }
+  if(token.startsWith('Bearer ')){
+    token = token.slice(7, token.length);
+    console.log(token);
+  }
+  if(token){
+    jwt.verify(token, key, (error, decoded)=>{
+      if(error){
+        return res.json({
+          message: 'Token no valido'
+        });
+      }
+      else{
+        req.decoded = decoded;
+        next();
+      }
+    })
+  }
+});
+
+
+router.get("/", verificacion, (req, res,next) => {
   const numPagina = Number.parseInt(req.query.pagina);
   const numLimite = Number.parseInt(req.query.limite);
   models.profesor.findAll({attributes: ["id", "nombre","apellido","dni","id_materia"],
