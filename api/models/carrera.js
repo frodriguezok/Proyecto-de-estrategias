@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
 carrera.associate = function(models) {
   	carrera.hasMany(models.materia, 
     {
-      as: 'materia',                 
+      as: 'materias-de-la-carrera',                 
       foreignKey: 'id_carrera'       
     })
 };

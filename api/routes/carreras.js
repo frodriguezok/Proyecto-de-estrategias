@@ -13,6 +13,7 @@ router.get("/", (req, res) => {
   models.carrera
     .findAll({
       attributes: ["id", "nombre"],
+      include:[{as:'materias-de-la-carrera', model:models.materia, attributes: ["id","nombre"]}],
       offset: numPagina * numLimite,
       limit: numLimite
     })    
@@ -53,6 +54,7 @@ const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
   models.carrera
     .findOne({
       attributes: ["id", "nombre"],
+      include:[{as:'materias-de-la-carrera', model:models.materia, attributes: ["id","nombre"]}],
       where: { id }
     })
     .then(carrera => (carrera ? onSuccess(carrera) : onNotFound()))
