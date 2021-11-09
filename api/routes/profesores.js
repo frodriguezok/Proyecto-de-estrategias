@@ -28,7 +28,6 @@ const verificacion = express.Router();
 
 verificacion.use((req, res, next)=>{
   let token = req.headers['x-access-token'] || req.headers['authorization'];
-  //console.log(token);
   if(!token){
     res.status(401).send({
       error: 'Es necesario el token'
@@ -66,7 +65,7 @@ router.get("/", verificacion, (req, res,next) => {
     }).then(profesores => res.send(profesores)).catch(error => { return next(error)});
   });
 
-router.post("/", (req, res) => {
+router.post("/",verificacion, (req, res) => {
     models.profesor
       .create({ nombre: req.body.nombre, apellido: req.body.apellido, dni: req.body.dni, id_materia: req.body.id_materia })
       .then(profesor => res.status(201).send({ id: profesor.id }))
@@ -92,7 +91,7 @@ const findProfesor = (id, { onSuccess, onNotFound, onError }) => {
       .catch(() => onError());
   };
 
-router.get("/:id", (req, res) => {
+router.get("/:id",verificacion, (req, res) => {
     findProfesor(req.params.id, {
       onSuccess: profesor => res.send(profesor),
       onNotFound: () => res.sendStatus(404),
@@ -100,7 +99,7 @@ router.get("/:id", (req, res) => {
     });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id",verificacion, (req, res) => {
     const onSuccess = profesor =>
       profesor
         .update({ nombre: req.body.nombre,apellido: req.body.apellido,dni: req.body.dni ,id_materia: req.body.id_materia }, { fields: ["nombre","apellido","dni","id_materia"]})
@@ -121,7 +120,7 @@ router.put("/:id", (req, res) => {
     });
   });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id",verificacion, (req, res) => {
     const onSuccess = profesor =>
       profesor
         .destroy()

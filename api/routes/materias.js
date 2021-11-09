@@ -1,7 +1,6 @@
 var express = require("express");
 var router = express.Router();
 var models = require("../models");
-
 const jwt = require('jsonwebtoken');
 const key = "clavesecreta2021";
 
@@ -29,7 +28,6 @@ const verificacion = express.Router();
 
 verificacion.use((req, res, next)=>{
   let token = req.headers['x-access-token'] || req.headers['authorization'];
-  //console.log(token);
   if(!token){
     res.status(401).send({
       error: 'Es necesario el token'
@@ -66,7 +64,7 @@ router.get("/", verificacion, (req, res,next) => {
   });
 
 
-router.post("/", (req, res) => {
+router.post("/",verificacion, (req, res) => {
     models.materia
       .create({ nombre: req.body.nombre, id_carrera: req.body.id_carrera })
       .then(materia => res.status(201).send({ id: materia.id }))
@@ -92,7 +90,7 @@ const findMateria = (id, { onSuccess, onNotFound, onError }) => {
       .catch(() => onError());
   };
 
-router.get("/:id", (req, res) => {
+router.get("/:id", verificacion, (req, res) => {
     findMateria(req.params.id, {
       onSuccess: materia => res.send(materia),
       onNotFound: () => res.sendStatus(404),
@@ -100,7 +98,7 @@ router.get("/:id", (req, res) => {
     });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id",verificacion ,(req, res) => {
     const onSuccess = materia =>
       materia
         .update({ nombre: req.body.nombre, id_carrera: req.body.id_carrera }, { fields: ["nombre","id_carrera"] })
@@ -121,7 +119,7 @@ router.put("/:id", (req, res) => {
     });
   });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id",verificacion, (req, res) => {
     const onSuccess = materia =>
       materia
         .destroy()

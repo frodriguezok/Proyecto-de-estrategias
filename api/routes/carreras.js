@@ -28,7 +28,6 @@ const verificacion = express.Router();
 
 verificacion.use((req, res, next)=>{
   let token = req.headers['x-access-token'] || req.headers['authorization'];
-  //console.log(token);
   if(!token){
     res.status(401).send({
       error: 'Es necesario el token'
@@ -70,7 +69,7 @@ router.get("/", verificacion, (req, res) => {
     .catch(() => res.sendStatus(500));
 });
 
-router.post("/", (req, res) => {
+router.post("/",verificacion, (req, res) => {
   models.carrera
     .create({ nombre: req.body.nombre })
     .then(carrera => res.status(201).send({ id: carrera.id }))
@@ -96,7 +95,7 @@ const findCarrera = (id, { onSuccess, onNotFound, onError }) => {
     .catch(() => onError());
 };
 
-router.get("/:id", (req, res) => {
+router.get("/:id",verificacion, (req, res) => {
   findCarrera(req.params.id, {
     onSuccess: carrera => res.send(carrera),
     onNotFound: () => res.sendStatus(404),
@@ -104,7 +103,7 @@ router.get("/:id", (req, res) => {
   });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id",verificacion, (req, res) => {
   const onSuccess = carrera =>
     carrera
       .update({ nombre: req.body.nombre }, { fields: ["nombre"] })
@@ -125,7 +124,7 @@ router.put("/:id", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id",verificacion, (req, res) => {
   const onSuccess = carrera =>
     carrera
       .destroy()
